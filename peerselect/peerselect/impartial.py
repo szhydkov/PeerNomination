@@ -31,8 +31,8 @@
   * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
   * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.    
-    
+  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 
 About
 --------------------
@@ -43,7 +43,7 @@ About
     yourself... otherwise it wouldn't be impartial.
 
     Note that this REQUIRES PYTHON 3.0+ with the newer rounding functions.
-        
+
 '''
 
 import math
@@ -65,7 +65,7 @@ def vanilla(score_matrix, k, normalize=False):
   -----------
   score_matrix: array like
     The numerical scores of the agents for all the other agents.
-    We use the convention that a[i,j] is the grade that agent 
+    We use the convention that a[i,j] is the grade that agent
     j gives to i.  This means that column j is all the grades
     *given* by agent j and that row i is the grades *recieved*
     by agent i.
@@ -102,7 +102,7 @@ def vanilla(score_matrix, k, normalize=False):
 
 def partition_explicit(score_matrix, k, partition, normalize=False):
   """
-  Selects elements[i] agents from partition[i] based on 
+  Selects elements[i] agents from partition[i] based on
   their total scores in score_matrix not taking into account
   the scores within the partition.
 
@@ -110,7 +110,7 @@ def partition_explicit(score_matrix, k, partition, normalize=False):
   -----------
   score_matrix: array like
     The numerical scores of the agents for all the other agents.
-    We use the convention that a[i,j] is the grade that agent 
+    We use the convention that a[i,j] is the grade that agent
     j gives to i.  This means that column j is all the grades
     *given* by agent j and that row i is the grades *recieved*
     by agent i.
@@ -119,9 +119,9 @@ def partition_explicit(score_matrix, k, partition, normalize=False):
     The number of elements to select from the score_matrix.
 
   partition: dict
-    A mapping from an integer --> list(indicies) where the list of 
-    inidicies are the rows of the score_matrix that contain 
-    the scores. 
+    A mapping from an integer --> list(indicies) where the list of
+    inidicies are the rows of the score_matrix that contain
+    the scores.
 
   normalize: Boolean
     A flag for normalizing or not normalizing the score matrix.
@@ -169,7 +169,7 @@ def partition(score_matrix, k, l, randomize=True, normalize=False):
   -----------
   score_matrix: array like
     The numerical scores of the agents for all the other agents.
-    We use the convention that a[i,j] is the grade that agent 
+    We use the convention that a[i,j] is the grade that agent
     j gives to i.  This means that column j is all the grades
     *given* by agent j and that row i is the grades *recieved*
     by agent i.
@@ -181,7 +181,7 @@ def partition(score_matrix, k, l, randomize=True, normalize=False):
     The number of partitions to make.
 
   randomize: Boolean
-    A flag for randomizing the partitions or not. 
+    A flag for randomizing the partitions or not.
 
   normalize: Boolean
     A flag for normalizing or not normalizing the score matrix.
@@ -218,7 +218,7 @@ def partition(score_matrix, k, l, randomize=True, normalize=False):
 
 def dollar_partition_explicit(score_matrix, k, partition, normalize=True):
   """
-  Selects k agents from the partitions based on 
+  Selects k agents from the partitions based on
   their dollar shares in score_matrix not taking into account
   the scores within the partition.
 
@@ -231,7 +231,7 @@ def dollar_partition_explicit(score_matrix, k, partition, normalize=True):
   -----------
   score_matrix: array like
     The numerical scores of the agents for all the other agents.
-    We use the convention that a[i,j] is the grade that agent 
+    We use the convention that a[i,j] is the grade that agent
     j gives to i.  This means that column j is all the grades
     *given* by agent j and that row i is the grades *recieved*
     by agent i.
@@ -240,9 +240,9 @@ def dollar_partition_explicit(score_matrix, k, partition, normalize=True):
     Number of total elements to select.
 
   partition: dict
-    A mapping from an integer --> list(indicies) where the list of 
-    inidicies are the rows of the score_matrix that contain 
-    the scores. 
+    A mapping from an integer --> list(indicies) where the list of
+    inidicies are the rows of the score_matrix that contain
+    the scores.
 
   normalize: Boolean
     A flag for normalizing or not normalizing the score matrix.
@@ -288,7 +288,7 @@ def dollar_partition_explicit(score_matrix, k, partition, normalize=True):
   dist = dist / dist.sum()
   if _DEBUG: print("\nDistribution:\n" + str(dist))
 
-  #Multiply the dist by k and take the ceil of each of these 
+  #Multiply the dist by k and take the ceil of each of these
   #to get the elements counts for each of the partitions.
   elements = [math.ceil(x*k) for x in dist]
   if _DEBUG: print("\nnum per partition:\n" + str(elements))
@@ -305,7 +305,7 @@ def dollar_partition_explicit(score_matrix, k, partition, normalize=True):
 
 def dollar_partition(score_matrix, k, l, randomize=True, normalize=True):
   """
-  Selects k agents from the generated partitions based on 
+  Selects k agents from the generated partitions based on
   their dollar shares in score_matrix not taking into account
   the scores within the partition.
 
@@ -319,7 +319,7 @@ def dollar_partition(score_matrix, k, l, randomize=True, normalize=True):
   -----------
   score_matrix: array like
     The numerical scores of the agents for all the other agents.
-    We use the convention that a[i,j] is the grade that agent 
+    We use the convention that a[i,j] is the grade that agent
     j gives to i.  This means that column j is all the grades
     *given* by agent j and that row i is the grades *recieved*
     by agent i.
@@ -363,7 +363,7 @@ def credible_subset(score_matrix, k, m, normalize=False):
   -----------
   score_matrix: array like
     The numerical scores of the agents for all the other agents.
-    We use the convention that a[i,j] is the grade that agent 
+    We use the convention that a[i,j] is the grade that agent
     j gives to i.  This means that column j is all the grades
     *given* by agent j and that row i is the grades *recieved*
     by agent i.
@@ -378,20 +378,20 @@ def credible_subset(score_matrix, k, m, normalize=False):
 
   Notes
   -----------
-  Each agent reviews $m$ other agents; and $k$ out of a total 
-  of $n$ agents are selected. If each agent reviews each other 
-  agent, then $m=n-1$. Set $T$ is the set of agents who have the 
-  top $k$ scores. Set $P$ is the set of agents who do not have 
-  the top $k$ scores but will make it to top $k$ if they gave 
-  zero score to all other agents. With probability $(k+|P|)/(k+m)$, 
-  CredibleSubset selects a set of $k$ agents uniformly at 
-  random from $T\cup P$ and with probability $1-(k+|T|)/(k+m)$, 
-  it selects no one. This only makes sense if $|P|\leq m$. 
+  Each agent reviews $m$ other agents; and $k$ out of a total
+  of $n$ agents are selected. If each agent reviews each other
+  agent, then $m=n-1$. Set $T$ is the set of agents who have the
+  top $k$ scores. Set $P$ is the set of agents who do not have
+  the top $k$ scores but will make it to top $k$ if they gave
+  zero score to all other agents. With probability $(k+|P|)/(k+m)$,
+  CredibleSubset selects a set of $k$ agents uniformly at
+  random from $T\cup P$ and with probability $1-(k+|T|)/(k+m)$,
+  it selects no one. This only makes sense if $|P|\leq m$.
   """
   score_matrix = validate_matrix(score_matrix)
   if isinstance(score_matrix, int):
     return 0
-  #Check that m is feasiable but we don't enforce 
+  #Check that m is feasiable but we don't enforce
   # that m entries be filled in (approval!)
   if m < 0 or m > score_matrix.shape[0]:
     print("infeasiable m!")
@@ -429,27 +429,27 @@ def credible_subset(score_matrix, k, m, normalize=False):
 
 def select_winners(score_matrix, elements, partition):
   """
-  Selects elements[i] agents from partition[i] based on 
+  Selects elements[i] agents from partition[i] based on
   their total scores in score_matrix.
 
   Parameters
   -----------
   score_matrix: array like
     The numerical scores of the agents for all the other agents.
-    We use the convention that a[i,j] is the grade that agent 
+    We use the convention that a[i,j] is the grade that agent
     j gives to i.  This means that column j is all the grades
     *given* by agent j and that row i is the grades *recieved*
     by agent i.
 
   elements: array like
-    A list of length equal to partition.keys() which is the 
+    A list of length equal to partition.keys() which is the
     number of elements from each partition.  Must be less
     than the dimension of the matrix.
 
   partition: dict
-    A mapping from an integer --> list(indicies) where the list of 
-    inidicies are the rows of the score_matrix that contain 
-    the scores. 
+    A mapping from an integer --> list(indicies) where the list of
+    inidicies are the rows of the score_matrix that contain
+    the scores.
 
   Returns
   -----------
@@ -485,7 +485,7 @@ def select_winners(score_matrix, elements, partition):
 
 def dollar_raffle_explicit(score_matrix, k, partition, normalize=True):
   """
-  Selects *exactly* k agents from the generated partitions based on 
+  Selects *exactly* k agents from the generated partitions based on
   their dollar shares in score_matrix not taking into account
   the scores within the partition.
 
@@ -499,7 +499,7 @@ def dollar_raffle_explicit(score_matrix, k, partition, normalize=True):
   -----------
   score_matrix: array like
     The numerical scores of the agents for all the other agents.
-    We use the convention that a[i,j] is the grade that agent 
+    We use the convention that a[i,j] is the grade that agent
     j gives to i.  This means that column j is all the grades
     *given* by agent j and that row i is the grades *recieved*
     by agent i.
@@ -508,9 +508,9 @@ def dollar_raffle_explicit(score_matrix, k, partition, normalize=True):
     Number of total elements to select.
 
   partition: dict
-    A mapping from an integer --> list(indicies) where the list of 
-    inidicies are the rows of the score_matrix that contain 
-    the scores. 
+    A mapping from an integer --> list(indicies) where the list of
+    inidicies are the rows of the score_matrix that contain
+    the scores.
 
   normalize: Boolean
     A flag for normalizing or not normalizing the score matrix.
@@ -589,7 +589,7 @@ def dollar_raffle_explicit(score_matrix, k, partition, normalize=True):
 
 def dollar_raffle(score_matrix, k, l, randomize=True, normalize=True):
   """
-  Selects *exactly* k agents from the generated partitions based on 
+  Selects *exactly* k agents from the generated partitions based on
   their dollar shares in score_matrix not taking into account
   the scores within the partition.
 
@@ -603,7 +603,7 @@ def dollar_raffle(score_matrix, k, l, randomize=True, normalize=True):
   -----------
   score_matrix: array like
     The numerical scores of the agents for all the other agents.
-    We use the convention that a[i,j] is the grade that agent 
+    We use the convention that a[i,j] is the grade that agent
     j gives to i.  This means that column j is all the grades
     *given* by agent j and that row i is the grades *recieved*
     by agent i.
@@ -640,11 +640,11 @@ def dollar_raffle(score_matrix, k, l, randomize=True, normalize=True):
 
 def exact_dollar_partition_explicit(score_matrix, k, partition, normalize=True):
   """
-  Selects exactly k agents from the partitions based on 
+  Selects exactly k agents from the partitions based on
   their dollar shares in score_matrix not taking into account
   the scores within the partition.
 
-  This implementation uses the lottery extension that we have 
+  This implementation uses the lottery extension that we have
   come up with.
 
   By default dollar partition normalizes the scores of the agents.
@@ -653,7 +653,7 @@ def exact_dollar_partition_explicit(score_matrix, k, partition, normalize=True):
   -----------
   score_matrix: array like
     The numerical scores of the agents for all the other agents.
-    We use the convention that a[i,j] is the grade that agent 
+    We use the convention that a[i,j] is the grade that agent
     j gives to i.  This means that column j is all the grades
     *given* by agent j and that row i is the grades *recieved*
     by agent i.
@@ -662,9 +662,9 @@ def exact_dollar_partition_explicit(score_matrix, k, partition, normalize=True):
     Number of total elements to select.
 
   partition: dict
-    A mapping from an integer --> list(indicies) where the list of 
-    inidicies are the rows of the score_matrix that contain 
-    the scores. 
+    A mapping from an integer --> list(indicies) where the list of
+    inidicies are the rows of the score_matrix that contain
+    the scores.
 
   normalize: Boolean
     A flag for normalizing or not normalizing the score matrix.
@@ -716,7 +716,7 @@ def exact_dollar_partition_explicit(score_matrix, k, partition, normalize=True):
   if _DEBUG: print("\nPartition Quotas:\n" + str(quotas))
 
   # You're A FOOL MATTEI!
-  # Get the lottery. 
+  # Get the lottery.
   lottery = randomized_allocation_from_quotas(quotas)
 
   if _DEBUG:
@@ -724,7 +724,7 @@ def exact_dollar_partition_explicit(score_matrix, k, partition, normalize=True):
     for k in sorted(lottery.keys(), reverse=True):
       print(str(k) + " :: " + str(lottery[k]))
 
-  # Make sure we have the right view... 
+  # Make sure we have the right view...
   # this could likely be done in a more clever way...
   v = []
   xk = []
@@ -759,7 +759,7 @@ def peer_nomination_lottery(score_matrix, k, epsilon=0):
   -----------
   score_matrix: array like
     The numerical scores of the agents for all the other agents.
-    We use the convention that a[i,j] is the grade that agent 
+    We use the convention that a[i,j] is the grade that agent
     j gives to i.  This means that column j is all the grades
     *given* by agent j and that row i is the grades *recieved*
     by agent i.
@@ -794,7 +794,7 @@ def peer_nomination_lottery(score_matrix, k, epsilon=0):
           # Compute the nominating fraction
           # m is the numner of non-zero entries in teh column
           m = np.count_nonzero(score_matrix[:,pool])
-          nomination_fraction = (float(k) / float(n)) * m + epsilon          
+          nomination_fraction = (float(k) / float(n)) * m + epsilon
           # ranks is densely packed and will have highest value at best scored agent.
           ranks = stats.rankdata(score_matrix[:,pool], method='dense').astype(int)
           max_rank = np.max(ranks)
@@ -810,7 +810,7 @@ def peer_nomination_lottery(score_matrix, k, epsilon=0):
                   nomination_count += 1
       #print("nomination_count", nomination_count)
       # If we are nominated by at least half the people who review us...
-      if nomination_count >= np.floor(np.count_nonzero(score_matrix[a,:]) / 2.0):
+      if nomination_count >= np.ceil(np.count_nonzero(score_matrix[a,:]) / 2.0):
           winning_set.append(a)
   return winning_set
 
@@ -825,9 +825,9 @@ def peer_nomination_lottery(score_matrix, k, epsilon=0):
 def randomized_allocation_from_quotas(quotas):
   """
   Given the quotas (s_1 ... s_l)
-  we implement Omer's Algorithm which greedly builds 
+  we implement Omer's Algorithm which greedly builds
   a probability distribution over vectors which yield
-  a discrete probability distribution over integer allocations. 
+  a discrete probability distribution over integer allocations.
 
   Parameters
   -----------
@@ -839,7 +839,7 @@ def randomized_allocation_from_quotas(quotas):
   Returns
   -----------
   distribution: dict
-    A mapping from (tuple) --> p where each tuple is 
+    A mapping from (tuple) --> p where each tuple is
     the same length and is an allocation selected with probability
     p.  Note that the sum of p's should be 1.0.
 
@@ -865,7 +865,7 @@ def randomized_allocation_from_quotas(quotas):
     print("Quotas: " + str(quotas))
     print("Sorted: " + str(s))
     print("Sort Key: " + str(sort_keys))
-  
+
 
   alpha = sum(frac_shares)
 
@@ -939,7 +939,7 @@ def randomized_allocation_from_quotas(quotas):
       sorted_vec[sort_keys[i]] = v
     sorted_distribution[tuple(sorted_vec)] = prob
 
-  if _DEBUG: 
+  if _DEBUG:
     print("\nSORTED LOTTERY:")
     for k in sorted(sorted_distribution.keys(), reverse=True):
      print(str(k) + " :: " + str(sorted_distribution[k]))
@@ -948,31 +948,31 @@ def randomized_allocation_from_quotas(quotas):
 
 def normalize_score_matrix(score_matrix, partition={}):
   """
-  Normalize a score_matrix so that all the scores given 
+  Normalize a score_matrix so that all the scores given
   by each agent to other agents outside their clusters
   is equal to exactly 1.
-  
+
 
   Parameters
   -----------
   score_matrix: array like
     The numerical scores of the agents for all the other agents.
-    We use the convention that a[i,j] is the grade that agent 
+    We use the convention that a[i,j] is the grade that agent
     j gives to i.  This means that column j is all the grades
     *given* by agent j and that row i is the grades *recieved*
     by agent i.
 
   partition: dict
-    A mapping from an integer --> list(indicies) where the list of 
-    inidicies are the rows of the score_matrix that contain 
-    the scores. 
+    A mapping from an integer --> list(indicies) where the list of
+    inidicies are the rows of the score_matrix that contain
+    the scores.
 
   Returns
   -----------
   score_matrix: array like
     The numerical scores of the agents for all the other agents
     normalized such that each column sums to 1.
-    We use the convention that a[i,j] is the grade that agent 
+    We use the convention that a[i,j] is the grade that agent
     j gives to i.  This means that column j is all the grades
     *given* by agent j and that row i is the grades *recieved*
     by agent i.
@@ -982,7 +982,7 @@ def normalize_score_matrix(score_matrix, partition={}):
   """
   # Normalize so that each Column sums to 1!
   col_sums = score_matrix.sum(axis=0)
-  
+
   if partition != {}:
     #Sanity check: iterate over the agents by partition and ensure
     #that they gave someone a score... otherwise give 1/(n-|P|-1)
@@ -1066,7 +1066,7 @@ def validate_matrix(score_matrix, partition={}):
   -----------
   score_matrix: array like
     The numerical scores of the agents for all the other agents.
-    We use the convention that a[i,j] is the grade that agent 
+    We use the convention that a[i,j] is the grade that agent
     j gives to i.  This means that column j is all the grades
     *given* by agent j and that row i is the grades *recieved*
     by agent i.
@@ -1085,7 +1085,7 @@ def validate_matrix(score_matrix, partition={}):
   if score_matrix.ndim != 2 or score_matrix.shape[0] != score_matrix.shape[1]:
       print("score matrix is not square or has no values")
       return 0
-  
+
   #Enforce the Diagonal is 0's
   for i in range(score_matrix.shape[0]):
       score_matrix[i,i] = 0.
@@ -1109,19 +1109,3 @@ def validate_matrix(score_matrix, partition={}):
   if _DEBUG: print("score matrix:\n"+str(score_matrix))
 
   return score_matrix
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
