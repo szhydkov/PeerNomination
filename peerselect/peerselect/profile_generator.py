@@ -174,7 +174,7 @@ def generate_approx_m_regular_assignment(agents, m, clusters={}, randomize=True)
 
   return agent_assignment
 
-def generate_mallows_mixture_profile(voters, candidates, distribution, reference_rankings, phis):
+def generate_mallows_mixture_profile(voters, candidates, distribution, reference_rankings, phis): 
   """
   For every voter generates an ordinal preference profile over the 
   set of candidates according to a mallows mixture model 
