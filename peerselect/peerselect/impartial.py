@@ -814,6 +814,8 @@ def peer_nomination_lottery(score_matrix, k, epsilon=0):
           winning_set.append(a)
   return winning_set
 
+def peer_nomination_lottery(score_matrix, k, epsilon=0):
+  return 0
 
 
 
