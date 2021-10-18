@@ -232,7 +232,7 @@ def generate_mallows_mixture_profile(voters, candidates, distribution, reference
 
 
   # Define the RVS for the draw over distros...
-  model_rvs = stats.rv_discrete(values=(list(range(len(distribution))),distribution))
+  sampled_phis = dict(zip(voters, np.random.choice(list(range(len(distribution))), len(voters), p=distribution)))
 
   insertion_rvs = {}
   # For each of the models we need to precompute the insertion distributions and
@@ -245,17 +245,49 @@ def generate_mallows_mixture_profile(voters, candidates, distribution, reference
     # Make a set of RV's for each element.
     model_insertion_rvs = {}
     for i in insertion_distribution.keys():
-      model_insertion_rvs[i] = stats.rv_discrete(values=(list(range(len(insertion_distribution[i]))), insertion_distribution[i]))
+      model_insertion_rvs[i] = insertion_distribution[i]
     insertion_rvs[m] = model_insertion_rvs
 
   profile = {}
   for c_voter in voters:
     # Draw a model.
-    c_model = model_rvs.rvs()
+    # c_model = model_rvs.rvs()
+    c_model = sampled_phis[c_voter]
+
     # Will generate a list (strict order) over the elements of candidates.
     profile[c_voter] = []
     for i,c in enumerate(reference_rankings[c_model]):
-      profile[c_voter].insert(insertion_rvs[c_model][i].rvs(), c)
+      probs = insertion_rvs[c_model][i]
+      position = np.random.choice(list(range(len(probs))), 1, p=probs)[0]
+      profile[c_voter].insert(position, c)
+
+  ### OLD VERSION ###
+
+  # model_rvs = stats.rv_discrete(values=(list(range(len(distribution))),distribution))
+
+  # insertion_rvs = {}
+  # # For each of the models we need to precompute the insertion distributions and
+  # # associated RVs.
+  # for m,p in enumerate(phis):
+  #   # Returns an insertion probability vector  according to phi.
+  #   # this is the probability that ref[i-1] should be inserted into position []
+  #   insertion_distribution = compute_mallows_insertion_distribution(len(candidates), p)
+  
+  #   # Make a set of RV's for each element.
+  #   model_insertion_rvs = {}
+  #   for i in insertion_distribution.keys():
+  #     model_insertion_rvs[i] = stats.rv_discrete(values=(list(range(len(insertion_distribution[i]))), insertion_distribution[i]))
+  #   insertion_rvs[m] = model_insertion_rvs
+
+  # profile = {}
+  # for c_voter in voters:
+  #   # Draw a model.
+  #   c_model = model_rvs.rvs()
+  #   # Will generate a list (strict order) over the elements of candidates.
+  #   profile[c_voter] = []
+  #   for i,c in enumerate(reference_rankings[c_model]):
+  #     position = insertion_rvs[c_model][i].rvs()
+  #     profile[c_voter].insert(position, c)
 
   return profile
 
