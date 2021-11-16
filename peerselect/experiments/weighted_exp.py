@@ -1,5 +1,5 @@
-import sys
-sys.path.insert(0, "../")
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 ### Standard Magic and startup initializers.
 
@@ -39,7 +39,7 @@ def run_experiment(n, k, m, l, p, s):
         while failed_iterations <= 10:
             try:
                 # Generate a profile and clustering
-                profile = profile_generator.generate_mallows_mixture_profile(agents, agents, [p, 1-p], [agents, agents], [0.5, 1])
+                profile = profile_generator.generate_mallows_mixture_profile(agents, agents, [p, 1-p], [agents, agents[::-1]], [0.8, 0.8])
                 clustering = impartial.even_partition_order(sorted(agents, key=lambda j: random.random()), l)
                 
                 # Borda -- need to start at 1 to distinguish from non-review in the score matrix
@@ -64,7 +64,7 @@ def run_experiment(n, k, m, l, p, s):
                 ws[Impartial.NOMINATION] = impartial.peer_nomination_lottery(score_matrix, k, eps_corrected)
                 ws[Impartial.EXACT] = impartial.exact_dollar_partition_explicit(score_matrix, k, clustering, normalize=True)
                 ws["EDP_rank"] = impartial.exact_dollar_partition_explicit(score_matrix_pn, k, clustering, normalize=True)
-                ws["PN_dist"] = impartial.weighted_peer_nomination(score_matrix, k, impartial.dist_weights, eps_corrected)
+                ws["PN_dist"] = impartial.weighted_peer_nomination(score_matrix, k, impartial.dist_weights, 0.0)
                 ws["PN_maj"] = impartial.weighted_peer_nomination(score_matrix, k, impartial.maj_weights, eps_corrected)
                 ws["PN_step"] = impartial.weighted_peer_nomination(score_matrix, k, impartial.step_weights, eps_corrected)
 
@@ -93,33 +93,41 @@ def run_experiment(n, k, m, l, p, s):
 
 _DEBUG = False
 
-# Parameters
+if __name__ == '__main__':
 
-#random.seed(15)
+    # Parameters
 
-s = 10
-test_n = [120]
-test_k = [20, 25, 30]
-test_m = [7, 8, 9]
-test_l = [4]
-test_p = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+    #random.seed(15)
 
-# Run the experiments in parallel.
+    s = 1000
+    test_n = [120]
+    test_k = [20, 25, 30]
+    test_m = [7, 8, 9, 10]
+    test_l = [4]
+    test_p = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
 
-pool = multiprocessing.Pool()
-outputs = pool.starmap(run_experiment, itertools.product(test_n, test_k, test_m, test_l, test_p, [s]))
+    # Run the experiments in parallel.
 
-gt_results_combined = {}
-for output in outputs:
-    if output == None:
-        continue
-    gt_results, pn_sizes = output
-    gt_results_combined.update(gt_results)
-    # print(gt_results_combined)
-    # print()
+    pool = multiprocessing.Pool()
+    outputs = pool.starmap(run_experiment, itertools.product(test_n, test_k, test_m, test_l, test_p, [s]))
+
+    gt_results_combined = {}
+    pn_sizes_combined = {}
+    for output in outputs:
+        if output == None:
+            continue
+        gt_results, pn_sizes = output
+        gt_results_combined.update(gt_results)
+        pn_sizes_combined.update(pn_sizes)
+        # print(gt_results_combined)
+        # print()
 
 
-df = pd.DataFrame(gt_results_combined)
-df.columns.names = ['n', 'k', 'm', 'l', 'p', 's', 'algo']
+    df = pd.DataFrame(gt_results_combined)
+    df.columns.names = ['n', 'k', 'm', 'l', 'p', 's', 'algo']
 
-df.to_pickle("some_test.pkl")
+    df_sizes = pd.DataFrame(pn_sizes_combined)
+    df_sizes.columns.names = ['n', 'k', 'm', 'l', 'p', 's', 'algo']
+
+    df.to_pickle("test_results_adv.pkl")
+    df_sizes.to_pickle("test_sizes_adv.pkl")

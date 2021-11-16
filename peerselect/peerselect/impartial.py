@@ -879,7 +879,9 @@ def weighted_peer_nomination(score_matrix, k, weighting_scheme, epsilon=0):
         
       #print("nomination_count", nomination_count)
       # If we are nominated by at least half the people who review us...
-      if nomination_sum >= sum(weights[reviewers]) / 2.0:
+      if nomination_sum == 0:
+        continue
+      elif nomination_sum >= sum(weights[reviewers]) / 2.0:
         winning_set.append(i)
 
   return winning_set
@@ -939,7 +941,7 @@ def maj_weights(score_matrix, k, epsilon, agg=4.0):
       majority = 1 if np.sum(other_reviews) > m/2 else 0
       if np.sum(other_reviews) == m/2:
         continue
-      elif not (this_review == majority):
+      elif not (np.round(this_review) == majority):
         errors[i] += 1
 
     weights[i] = np.maximum(1-agg*errors[i]/m, 0)
@@ -977,7 +979,7 @@ def step_weights(score_matrix, k, epsilon,
       majority = 1 if np.sum(other_reviews) > m/2 else 0
       if np.sum(other_reviews) == m/2:
         continue
-      elif not (this_review == majority):
+      elif not (np.round(this_review) == majority):
         errors[i] += 1
 
     for s in range(len(steps)):
