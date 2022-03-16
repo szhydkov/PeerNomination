@@ -1,6 +1,5 @@
 import sys, os
 
-from sqlalchemy import false
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 ### Standard Magic and startup initializers.

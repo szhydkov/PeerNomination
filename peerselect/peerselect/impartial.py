@@ -891,6 +891,36 @@ def weighted_peer_nomination(score_matrix, k, weighting_scheme, epsilon=0):
 """
 
 def dist_weights(score_matrix, k, epsilon, agg=25.0):
+  """
+  Computes the reviewer weights using the Distance method.
+
+  Parameters
+  -----------
+  score_matrix: array like
+    The numerical scores of the agents for all the other agents.
+    We use the convention that a[i,j] is the grade that agent
+    j gives to i.  This means that column j is all the grades
+    *given* by agent j and that row i is the grades *recieved*
+    by agent i. 
+
+  k: integer
+    The target number of winners (selected agents).
+
+  epislon: float
+    The slack parameter for nomination.
+
+  agg: float
+    Aggression parameter.
+
+  Returns
+  -----------
+    weights: float array
+      An array of size n; weights[i] = weight of agent i.
+
+  Notes
+  -----------
+
+  """
 
   n = score_matrix.shape[0]
 
@@ -903,20 +933,51 @@ def dist_weights(score_matrix, k, epsilon, agg=25.0):
   # Iterate over the reviewers
   for i in range(n):
     # print("reivewer", i)
-    pool = score_matrix[:,i].nonzero()[0] #reviewer pool of i
+    pool = score_matrix[:,i].nonzero()[0] # reviewer bundle of i
     m = len(pool)
-    # print("pool: ", pool)
 
+    # Go through each reviewee of i and sum up average distances
+    # to other reviewers
     for j in range(m):
       this_review = nom_matrix[pool[j], i]
       other_reviews = nom_matrix[pool[j], score_matrix[pool[j],:].nonzero()[0]]
-      # print("    j=", j, ", reviews=", other_reviews)
 
       dist[i] += np.mean([abs(this_review-other_reviews[a]) for a in range(m)])
 
+  # Apply the aggression parameter to discriminate the weights more
   return (1 - dist/m)**agg
 
 def maj_weights(score_matrix, k, epsilon, agg=4.0):
+  """
+  Computes the reviewer weights using the Distance method.
+
+  Parameters
+  -----------
+  score_matrix: array like
+    The numerical scores of the agents for all the other agents.
+    We use the convention that a[i,j] is the grade that agent
+    j gives to i.  This means that column j is all the grades
+    *given* by agent j and that row i is the grades *recieved*
+    by agent i. 
+
+  k: integer
+    The target number of winners (selected agents).
+
+  epislon: float
+    The slack parameter for nomination.
+
+  agg: float
+    Aggression parameter.
+
+  Returns
+  -----------
+    weights: float array
+      An array of size n; weights[i] = weight of agent i.
+
+  Notes
+  -----------
+
+  """
 
   n = score_matrix.shape[0]
 
@@ -928,15 +989,13 @@ def maj_weights(score_matrix, k, epsilon, agg=4.0):
 
   # Iterate over the reviewers
   for i in range(n):
-    # print("reivewer", i)
     pool = score_matrix[:,i].nonzero()[0] #reviewer pool of i
     m = len(pool)
-    # print("pool: ", pool)
 
+    # Go through each reviewee of i and count the errors of i
     for j in range(m):
       this_review = nom_matrix[pool[j], i]
       other_reviews = nom_matrix[pool[j], score_matrix[pool[j],:].nonzero()[0]]
-      # print("    j=", j, ", reviews=", other_reviews)
 
       majority = 1 if np.sum(other_reviews) > m/2 else 0
       if np.sum(other_reviews) == m/2:
@@ -944,12 +1003,49 @@ def maj_weights(score_matrix, k, epsilon, agg=4.0):
       elif not (np.round(this_review) == majority):
         errors[i] += 1
 
+    # Apply the aggression parameter to discriminate the weights more
     weights[i] = np.maximum(1-agg*errors[i]/m, 0)
 
   return weights
 
 def step_weights(score_matrix, k, epsilon, 
   steps=[0.05, 0.10], levels=[0.5, 0]):
+  """
+  Computes the reviewer weights using the Distance method.
+
+  Parameters
+  -----------
+  score_matrix: array like
+    The numerical scores of the agents for all the other agents.
+    We use the convention that a[i,j] is the grade that agent
+    j gives to i.  This means that column j is all the grades
+    *given* by agent j and that row i is the grades *recieved*
+    by agent i. 
+
+  k: integer
+    The target number of winners (selected agents).
+
+  epislon: float
+    The slack parameter for nomination.
+
+  steps: float array
+    How many mistakes as a proportion of m can an agent commit 
+    before reducing their weight. 
+
+  levels: float array
+    What the weight is reduced to after an agent reaches the 
+    respective step (error threshold).
+
+  Returns
+  -----------
+    weights: float array
+      An array of size n; weights[i] = weight of agent i.
+
+  Notes
+  -----------
+  I don't remember why the default thresholds are so harsh (5% and 10%).
+
+  """
 
   n = score_matrix.shape[0]
 
