@@ -1,2 +1,3 @@
-# extedned_peer_selection
-Code and Data For Peer Selection with Stas Extensions
+# PeerNomination
+
+Paper: https://www.sciencedirect.com/science/article/pii/S0004370222001837 
