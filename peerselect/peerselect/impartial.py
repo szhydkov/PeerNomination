@@ -769,7 +769,7 @@ def peer_nomination_lottery(score_matrix, k, epsilon=0):
   k: integer
     The number of agents to select from a.
 
-  epislon: float
+  epsilon: float
     The slack parameter for nomination
 
   Returns
@@ -835,7 +835,7 @@ def weighted_peer_nomination(score_matrix, k, weighting_scheme, epsilon=0):
   weighting_scheme: function
     The weighting scheme to apply to reviewers.
 
-  epislon: float
+  epsilon: float
     The slack parameter for nomination.
 
   Returns
@@ -906,7 +906,7 @@ def dist_weights(score_matrix, k, epsilon, agg=25.0):
   k: integer
     The target number of winners (selected agents).
 
-  epislon: float
+  epsilon: float
     The slack parameter for nomination.
 
   agg: float
@@ -963,7 +963,7 @@ def maj_weights(score_matrix, k, epsilon, agg=4.0):
   k: integer
     The target number of winners (selected agents).
 
-  epislon: float
+  epsilon: float
     The slack parameter for nomination.
 
   agg: float
@@ -1025,7 +1025,7 @@ def step_weights(score_matrix, k, epsilon,
   k: integer
     The target number of winners (selected agents).
 
-  epislon: float
+  epsilon: float
     The slack parameter for nomination.
 
   steps: float array
@@ -1083,7 +1083,181 @@ def step_weights(score_matrix, k, epsilon,
         weights[i] = levels[s]
 
   return weights
-    
+
+def kt_weights(score_matrix, k, epsilon):
+  """
+  Computes the reviewer weights using the Kendall-Tau method.
+
+  Parameters
+  -----------
+  score_matrix: array like
+    The numerical scores of the agents for all the other agents.
+    We use the convention that a[i,j] is the grade that agent
+    j gives to i.  This means that column j is all the grades
+    *given* by agent j and that row i is the grades *recieved*
+    by agent i.
+  k: integer
+    The target number of winners (selected agents).
+
+  epsilon: float
+    The slack parameter for nomination.
+
+  Returns
+  -----------
+  weights: float array
+    An array of size n; weights[i] = weight of agent i.
+  """
+  # Induce n and m from the score matrix (assiming m-regularity)
+  n = score_matrix.shape[0]
+  m = len(score_matrix[:,0].nonzero()[0])
+
+  # Initialise the weights
+  weights = np.zeros(n)
+
+  # Iterate over the reviewers
+  for i in range(n):
+    pool = score_matrix[:,i].nonzero()[0] #reviewer pool of i
+    m = len(pool)
+
+    # Full ranking review given by Borda scores
+    this_review = score_matrix[pool, i]
+
+    # Compute the reference ranking of the reviews
+    proposal_scores = np.zeros(m)
+    for j in range(m):
+      proposal_scores[j] = sum(score_matrix[pool[j],:])
+    # ref_ranking = stats.rankdata(proposal_scores, method='average')
+
+    # Compute the Kendall-Tau distance
+    tau = stats.kendalltau(proposal_scores, this_review, variant="c")[0]
+    weights[i] = max(0, tau)
+
+  return weights**4
+
+def spearman_weights(score_matrix, k, epsilon):
+  """
+  Computes the reviewer weights using the Kendall-Tau method.
+
+  Parameters
+  -----------
+  score_matrix: array like
+    The numerical scores of the agents for all the other agents.
+    We use the convention that a[i,j] is the grade that agent
+    j gives to i.  This means that column j is all the grades
+    *given* by agent j and that row i is the grades *recieved*
+    by agent i.
+  k: integer
+    The target number of winners (selected agents).
+
+  epsilon: float
+    The slack parameter for nomination.
+
+  Returns
+  -----------
+  weights: float array
+    An array of size n; weights[i] = weight of agent i.
+  """
+  # Induce n and m from the score matrix (assiming m-regularity)
+  n = score_matrix.shape[0]
+  m = len(score_matrix[:,0].nonzero()[0])
+
+  # Initialise the weights
+  weights = np.zeros(n)
+
+  # Iterate over the reviewers
+  for i in range(n):
+    pool = score_matrix[:,i].nonzero()[0] #reviewer pool of i
+    m = len(pool)
+
+    # Full ranking review given by Borda scores
+    this_review = score_matrix[pool, i]
+
+    # Compute the reference ranking of the reviews
+    proposal_scores = np.zeros(m)
+    for j in range(m):
+      proposal_scores[j] = sum(score_matrix[pool[j],:])
+    # ref_ranking = stats.rankdata(proposal_scores, method='average')
+
+    # Compute the SPearman correlation
+    spcor = stats.spearmanr(proposal_scores, this_review)[0]
+    weights[i] = max(0, spcor)
+
+  return weights**10
+
+def rankstep_weights(score_matrix, k, epsilon, 
+  steps=[0.2, 0.4], levels=[0.5, 0]):
+  """
+  Computes the reviewer weights using the Distance method.
+
+  Parameters
+  -----------
+  score_matrix: array like
+    The numerical scores of the agents for all the other agents.
+    We use the convention that a[i,j] is the grade that agent
+    j gives to i.  This means that column j is all the grades
+    *given* by agent j and that row i is the grades *recieved*
+    by agent i. 
+
+  k: integer
+    The target number of winners (selected agents).
+
+  epsilon: float
+    The slack parameter for nomination.
+
+  steps: float array
+    How many mistakes as a proportion of m can an agent commit 
+    before reducing their weight. 
+
+  levels: float array
+    What the weight is reduced to after an agent reaches the 
+    respective step (error threshold).
+
+  Returns
+  -----------
+    weights: float array
+      An array of size n; weights[i] = weight of agent i.
+
+  Notes
+  -----------
+  I don't remember why the default thresholds are so harsh (5% and 10%).
+
+  """
+  # Induce n and m from the score matrix (assiming m-regularity)
+  n = score_matrix.shape[0]
+  m = len(score_matrix[:,0].nonzero()[0])
+
+  # Initialise the weights
+  weights = np.ones(n)
+  errors = np.zeros(n)
+
+  # Iterate over the reviewers
+  for i in range(n):
+    pool = score_matrix[:,i].nonzero()[0] #reviewer bundle of i
+    m = len(pool)
+
+    # Full ranking review given by Borda scores
+    # this_review = score_matrix[pool, i]
+
+    for j in range(m):
+      this_review = score_matrix[pool[j], i]
+      other_reviews = score_matrix[pool[j], score_matrix[pool[j],:].nonzero()[0]]
+      # print("    j=", j, ", reviews=", other_reviews)
+
+      if np.std(other_reviews) < 10**-6:
+        abs_zscore = 0 # avoid division by zero
+      else:
+        abs_zscore = abs(this_review - np.mean(other_reviews))/np.std(other_reviews)
+      
+      if abs_zscore > 1:
+        errors[i] += 1
+
+    for s in range(len(steps)):
+      if errors[i]/m > steps[s]:
+        weights[i] = levels[s]
+
+  return weights
+
+
 
 
 """
